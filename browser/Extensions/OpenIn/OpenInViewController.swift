@@ -42,12 +42,12 @@ final class OpenInViewController: UIViewController {
             }
             
             guard let sharedURL else {
-                self.finishWithError(message: "No link was provided.")
+                self.finishWithError(message: "未提供链接。")
                 return
             }
             
             guard let browserURL = self.browserOpenURL(for: sharedURL) else {
-                self.finishWithError(message: "Unable to open Reynard.")
+                self.finishWithError(message: "无法打开 Reynard。")
                 return
             }
             

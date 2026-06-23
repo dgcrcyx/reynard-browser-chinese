@@ -33,7 +33,7 @@ final class JITFailureView: UIView {
     }
     
     func updateError(code: Int, description: String) {
-        errorLabel.text = "Error \(code): \(description)"
+        errorLabel.text = "错误 \(code)：\(description)"
         errorScrollView.setContentOffset(.zero, animated: false)
     }
     

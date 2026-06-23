@@ -102,7 +102,7 @@ public struct ContentPermission {
               let url = URL(string: uri),
               let host = url.host,
               !host.isEmpty else {
-            return "This site"
+            return "此网站"
         }
         
         return host
