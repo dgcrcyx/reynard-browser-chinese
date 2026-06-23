@@ -1,5 +1,4 @@
 name: Build IPA
-
 on:
   push:
     branches: [ main ]
@@ -9,101 +8,98 @@ jobs:
   build:
     runs-on: macos-15
     timeout-minutes: 360
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        submodules: false
-        fetch-depth: 0
-    
-    - name: Select latest Xcode
-      run: |
-        # 列出可用的 Xcode 版本
-        ls -la /Applications/ | grep Xcode || true
-        # 尝试切换到最新的 Xcode
-        if [ -d "/Applications/Xcode_16.2.app" ]; then
-          sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
-        elif [ -d "/Applications/Xcode_16.1.app" ]; then
-          sudo xcode-select -s /Applications/Xcode_16.1.app/Contents/Developer
-        elif [ -d "/Applications/Xcode_16.0.app" ]; then
-          sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
-        elif [ -d "/Applications/Xcode_15.4.app" ]; then
-          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
-        fi
-        # 显示当前 Xcode 和 SDK 版本
-        xcodebuild -version
-        xcrun --sdk iphoneos --show-sdk-version
-    
-    - name: Initialize submodules
-      run: |
-        # 所有子模块都不通过 git submodule 机制处理，由各自的脚本自己管理
-        # 这里只确保目录准备好
-        echo "Preparing directories..."
-        
-        # 清理可能存在的非 git 仓库目录
-        for dir in "engine/firefox" "support/idevice"; do
-          if [ -d "$dir" ] && [ ! -d "$dir/.git" ]; then
-            echo "$dir exists but is not a git repo, removing..."
-            rm -rf "$dir"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          fetch-depth: 0
+
+      - name: Select latest Xcode
+        run: |
+          # 列出可用的 Xcode 版本
+          ls -la /Applications/ | grep Xcode || true
+          # 尝试切换到最新的 Xcode
+          if [ -d "/Applications/Xcode_16.2.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+          elif [ -d "/Applications/Xcode_16.1.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.1.app/Contents/Developer
+          elif [ -d "/Applications/Xcode_16.0.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
+          elif [ -d "/Applications/Xcode_15.4.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
           fi
-        done
-        
-        echo "Directory status:"
-        ls -la engine/ 2>/dev/null || echo "engine/ not found"
-        ls -la support/ 2>/dev/null || echo "support/ not found"
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
-    
-    - name: Install Rust
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        targets: aarch64-apple-ios
-    
-    - name: Install ldid
-      run: |
-        brew install ldid
-    
-    - name: Download Gecko
-      run: |
-        chmod +x ./tools/development/update-gecko.sh
-        ./tools/development/update-gecko.sh
-    
-    - name: Apply patches
-      run: |
-        chmod +x ./tools/development/apply-patches.sh
-        ./tools/development/apply-patches.sh
-    
-    - name: Build idevice
-      run: |
-        chmod +x ./tools/development/build-idevice.sh
-        ./tools/development/build-idevice.sh
-    
-    - name: Build Gecko engine
-      run: |
-        chmod +x ./tools/development/build-gecko.sh
-        ./tools/development/build-gecko.sh
-    
-    - name: Build app
-      run: |
-        chmod +x ./tools/release/build-app.sh
-        ./tools/release/build-app.sh
-    
-    - name: Create IPA
-      run: |
-        chmod +x ./tools/release/create-ipa.sh
-        ./tools/release/create-ipa.sh
-    
-    - name: Upload IPA
-      uses: actions/upload-artifact@v4
-      with:
-        name: Reynard-IPA
-        path: |
-          dist/Reynard-Unsigned.ipa
-          dist/Reynard.ipa
-          dist/Reynard-TrollStore.tipa
-          dist/Reynard-Jailbroken.ipa
-        retention-days: 30
+          # 显示当前 Xcode 和 SDK 版本
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+
+      - name: Initialize submodules
+        run: |
+          # 所有子模块都不通过 git submodule 机制处理，由各自的脚本自己管理
+          # 这里只确保目录准备好
+          echo "Preparing directories..."
+          # 清理可能存在的非 git 仓库目录
+          for dir in "engine/firefox" "support/idevice"; do
+            if [ -d "$dir" ] && [ ! -d "$dir/.git" ]; then
+              echo "$dir exists but is not a git repo, removing..."
+              rm -rf "$dir"
+            fi
+          done
+          echo "Directory status:"
+          ls -la engine/ 2>/dev/null || echo "engine/ not found"
+          ls -la support/ 2>/dev/null || echo "support/ not found"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios
+
+      - name: Install ldid
+        run: |
+          brew install ldid
+
+      - name: Download Gecko
+        run: |
+          chmod +x ./tools/development/update-gecko.sh
+          ./tools/development/update-gecko.sh
+
+      - name: Apply patches
+        run: |
+          chmod +x ./tools/development/apply-patches.sh
+          ./tools/development/apply-patches.sh
+
+      - name: Build idevice
+        run: |
+          chmod +x ./tools/development/build-idevice.sh
+          ./tools/development/build-idevice.sh
+
+      - name: Build Gecko engine
+        run: |
+          chmod +x ./tools/development/build-gecko.sh
+          ./tools/development/build-gecko.sh
+
+      - name: Build app
+        run: |
+          chmod +x ./tools/release/build-app.sh
+          ./tools/release/build-app.sh
+
+      - name: Create IPA
+        run: |
+          chmod +x ./tools/release/create-ipa.sh
+          ./tools/release/create-ipa.sh
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Reynard-IPA
+          path: |
+            dist/Reynard-Unsigned.ipa
+            dist/Reynard.ipa
+            dist/Reynard-TrollStore.tipa
+            dist/Reynard-Jailbroken.ipa
+          retention-days: 30
