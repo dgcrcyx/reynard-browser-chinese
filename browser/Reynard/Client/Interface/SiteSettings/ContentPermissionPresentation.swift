@@ -13,21 +13,21 @@ extension ContentPermission {
         let host = Self.permissionHost(from: uri)
         switch permission {
         case .geolocation:
-            return "Allow \(host) to use your location?"
+            return "允许 \(host) 使用你的位置信息吗？"
         case .desktopNotification:
-            return "Allow \(host) to send notifications?"
+            return "允许 \(host) 发送通知吗？"
         case .persistentStorage:
-            return "Allow \(host) to store data in persistent storage?"
+            return "允许 \(host) 在持久化存储中保存数据吗？"
         case .mediaKeySystemAccess:
-            return "Allow \(host) to play DRM-controlled content?"
+            return "允许 \(host) 播放受 DRM 保护的内容吗？"
         case .storageAccess:
-            return "Allow \(Self.permissionHost(from: thirdPartyOrigin)) to use its cookies on \(host)?"
+            return "允许 \(Self.permissionHost(from: thirdPartyOrigin)) 在 \(host) 上使用它的 Cookie 吗？"
         case .localDeviceAccess:
-            return "Allow \(host) to access other apps and services on this device?"
+            return "允许 \(host) 访问此设备上的其他应用和服务吗？"
         case .localNetworkAccess:
-            return "Allow \(host) to access apps and services on devices connected to your local network?"
+            return "允许 \(host) 访问你本地网络中连接设备上的应用和服务吗？"
         case .deviceSensors:
-            return "Allow \(host) to use motion & orientation sensors?"
+            return "允许 \(host) 使用运动和方向传感器吗？"
         case .camera,
                 .microphone,
                 .webxr,
@@ -41,7 +41,7 @@ extension ContentPermission {
     var alertMessage: String? {
         switch permission {
         case .storageAccess:
-            return "You may want to block access if it’s not clear why \(Self.permissionHost(from: thirdPartyOrigin)) needs this data."
+            return "如果不清楚 \(Self.permissionHost(from: thirdPartyOrigin)) 为什么需要这些数据，你可能想要阻止访问。"
         case .camera,
                 .microphone,
                 .geolocation,
@@ -63,13 +63,13 @@ extension ContentPermission {
         let host = permissionHost(from: uri)
         switch (videoRequested, audioRequested) {
         case (true, true):
-            return "Allow \(host) to use your camera and microphone?"
+            return "允许 \(host) 使用你的相机和麦克风吗？"
         case (true, false):
-            return "Allow \(host) to use your camera?"
+            return "允许 \(host) 使用你的相机吗？"
         case (false, true):
-            return "Allow \(host) to use your microphone?"
+            return "允许 \(host) 使用你的麦克风吗？"
         case (false, false):
-            return "Allow \(host) to use your camera and microphone?"
+            return "允许 \(host) 使用你的相机和麦克风吗？"
         }
     }
 }

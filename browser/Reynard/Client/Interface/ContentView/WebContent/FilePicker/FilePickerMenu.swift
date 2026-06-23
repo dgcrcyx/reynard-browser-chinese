@@ -78,7 +78,7 @@ extension FilePicker {
                 }
             })
         }
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel) { [weak self] _ in
             self?.finish(with: nil)
         })
         
@@ -129,11 +129,11 @@ extension FilePicker {
     private func title(for action: PickerAction) -> String {
         switch action {
         case .photoLibrary:
-            return "Photo Library"
+            return "照片图库"
         case .camera:
             return cameraActionTitle
         case .chooseFile:
-            return mode == .folder ? "Choose Folder" : "Choose File"
+            return mode == .folder ? "选择文件夹" : "选择文件"
         }
     }
     
@@ -155,13 +155,13 @@ extension FilePicker {
         
         switch (supportsImages, supportsVideos) {
         case (true, true):
-            return "Take Photo or Video"
+            return "拍照或录像"
         case (true, false):
-            return "Take Photo"
+            return "拍照"
         case (false, true):
-            return "Take Video"
+            return "录像"
         case (false, false):
-            return "Take Photo"
+            return "拍照"
         }
     }
     

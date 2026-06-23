@@ -8,113 +8,64 @@ on:
 jobs:
   build:
     runs-on: macos-14
-    timeout-minutes: 360  # 最长6小时，防止超时
+    timeout-minutes: 360
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
         submodules: recursive
-        fetch-depth: 0
     
-    - name: 🔍 查找项目目录
-      id: find-project
-      run: |
-        # 尝试在当前目录查找
-        if [ -f "./tools/development/update-gecko.sh" ]; then
-          echo "PROJECT_DIR=." >> $GITHUB_OUTPUT
-          echo "✅ 项目在根目录"
-        # 尝试在常见子目录查找
-        elif [ -f "./reynard-browser-chinese/tools/development/update-gecko.sh" ]; then
-          echo "PROJECT_DIR=./reynard-browser-chinese" >> $GITHUB_OUTPUT
-          echo "✅ 项目在 reynard-browser-chinese 子目录"
-        elif [ -f "./reynard-browser/tools/development/update-gecko.sh" ]; then
-          echo "PROJECT_DIR=./reynard-browser" >> $GITHUB_OUTPUT
-          echo "✅ 项目在 reynard-browser 子目录"
-        else
-          echo "❌ 找不到项目目录！"
-          echo "当前目录结构："
-          ls -la
-          echo ""
-          echo "所有子目录："
-          find . -maxdepth 2 -type d | head -30
-          exit 1
-        fi
-    
-    - name: 📦 列出项目文件（调试用）
-      run: |
-        cd ${{ steps.find-project.outputs.PROJECT_DIR }}
-        echo "项目根目录文件："
-        ls -la
-        echo ""
-        echo "tools 目录："
-        ls -la tools/development/
-        echo ""
-        echo "tools/release/ 目录："
-        ls -la tools/release/
-    
-    - name: 🐍 设置 Python
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.x'
-        cache: 'pip'
     
-    - name: 🦀 设置 Rust
+    - name: Install Rust
       uses: dtolnay/rust-toolchain@stable
       with:
         targets: aarch64-apple-ios
     
-    - name: 📦 缓存 Rust 依赖
-      uses: Swatinem/rust-cache@v2
-      with:
-        workspaces: ${{ steps.find-project.outputs.PROJECT_DIR }}/support/idevice
-    
-    - name: 🍺 安装 ldid
+    - name: Install ldid
       run: |
         brew install ldid
     
-    - name: ⬇️ 下载 Gecko 引擎
+    - name: Download Gecko
       run: |
-        cd ${{ steps.find-project.outputs.PROJECT_DIR }}
         chmod +x ./tools/development/update-gecko.sh
         ./tools/development/update-gecko.sh
     
-    - name: 🔧 应用补丁
+    - name: Apply patches
       run: |
-        cd ${{ steps.find-project.outputs.PROJECT_DIR }}
         chmod +x ./tools/development/apply-patches.sh
         ./tools/development/apply-patches.sh
     
-    - name: 🔨 构建 idevice 依赖
+    - name: Build idevice
       run: |
-        cd ${{ steps.find-project.outputs.PROJECT_DIR }}
         chmod +x ./tools/development/build-idevice.sh
         ./tools/development/build-idevice.sh
     
-    - name: 🔥 构建 Gecko 引擎（这步最耗时）
+    - name: Build Gecko engine
       run: |
-        cd ${{ steps.find-project.outputs.PROJECT_DIR }}
         chmod +x ./tools/development/build-gecko.sh
         ./tools/development/build-gecko.sh
     
-    - name: 📱 构建应用
+    - name: Build app
       run: |
-        cd ${{ steps.find-project.outputs.PROJECT_DIR }}
         chmod +x ./tools/release/build-app.sh
         ./tools/release/build-app.sh
     
-    - name: 📦 创建 IPA
+    - name: Create IPA
       run: |
-        cd ${{ steps.find-project.outputs.PROJECT_DIR }}
         chmod +x ./tools/release/create-ipa.sh
         ./tools/release/create-ipa.sh
     
-    - name: 📤 上传 IPA 文件
+    - name: Upload IPA
       uses: actions/upload-artifact@v4
       with:
         name: Reynard-IPA
         path: |
-          ${{ steps.find-project.outputs.PROJECT_DIR }}/dist/Reynard.ipa
-          ${{ steps.find-project.outputs.PROJECT_DIR }}/dist/Reynard-TrollStore.tipa
-          ${{ steps.find-project.outputs.PROJECT_DIR }}/dist/Reynard-Jailbroken.ipa
+          dist/Reynard.ipa
+          dist/Reynard-TrollStore.tipa
+          dist/Reynard-Jailbroken.ipa
         retention-days: 30

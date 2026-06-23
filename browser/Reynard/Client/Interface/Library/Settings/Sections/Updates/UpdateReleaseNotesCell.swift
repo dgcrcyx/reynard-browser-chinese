@@ -87,7 +87,7 @@ final class UpdateReleaseNotesCell: UITableViewCell {
         nameLabel.numberOfLines = 1
         
         let versionLabel = UILabel()
-        versionLabel.text = "Version \(updateInfo.version)"
+        versionLabel.text = "版本 \(updateInfo.version)"
         versionLabel.font = UIFont.preferredFont(forTextStyle: .footnote)
         versionLabel.textColor = .secondaryLabel
         
@@ -141,7 +141,7 @@ final class UpdateReleaseNotesCell: UITableViewCell {
     }
     
     private func currentUpdateInfo() -> UpdateInfo {
-        var appName = "Reynard Browser"
+        var appName = "Reynard 浏览器"
         var latestVersionString = BrowserUpdates.shared.latestVersion
         var sizeString = ""
         
@@ -177,7 +177,7 @@ final class UpdateReleaseNotesCell: UITableViewCell {
               let latestEntry = versions.first,
               let description = latestEntry["localizedDescription"] as? String else {
             return NSAttributedString(
-                string: "No release notes available.",
+                string: "暂无发布说明。",
                 attributes: [.font: UIFont.preferredFont(forTextStyle: .footnote)]
             )
         }

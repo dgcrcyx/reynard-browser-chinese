@@ -81,7 +81,7 @@ final class PromptPresenter: PromptPresenting {
                 message: request.message.isEmpty ? nil : request.message,
                 preferredStyle: .alert
             )
-            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            alert.addAction(UIAlertAction(title: "好的", style: .default) { _ in
                 continuation.resume()
             })
             presenter.present(alert, animated: true)
@@ -116,7 +116,7 @@ final class PromptPresenter: PromptPresenting {
             }
             
             if alert.actions.isEmpty {
-                alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                alert.addAction(UIAlertAction(title: "好的", style: .default) { _ in
                     continuation.resume(returning: .button(0))
                 })
             }
@@ -139,10 +139,10 @@ final class PromptPresenter: PromptPresenting {
             alert.addTextField { textField in
                 textField.text = request.value
             }
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            alert.addAction(UIAlertAction(title: "取消", style: .cancel) { _ in
                 continuation.resume(returning: nil)
             })
-            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            alert.addAction(UIAlertAction(title: "好的", style: .default) { _ in
                 continuation.resume(returning: .text(alert.textFields?.first?.text ?? ""))
             })
             presenter.present(alert, animated: true)
@@ -155,19 +155,19 @@ final class PromptPresenter: PromptPresenting {
         }
         
         let message = request.directoryName.isEmpty
-        ? "Are you sure you want to upload all files? Only do this if you trust the site."
-        : "Are you sure you want to upload all files from \"\(request.directoryName)\"? Only do this if you trust the site."
+        ? "你确定要上传所有文件吗？仅在你信任该网站时才这样做。"
+        : "你确定要上传 \"\(request.directoryName)\" 中的所有文件吗？仅在你信任该网站时才这样做。"
         
         return await withCheckedContinuation { continuation in
             let alert = UIAlertController(
-                title: "Confirm Upload",
+                title: "确认上传",
                 message: message,
                 preferredStyle: .alert
             )
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            alert.addAction(UIAlertAction(title: "取消", style: .cancel) { _ in
                 continuation.resume(returning: .folderUpload(allowed: false))
             })
-            alert.addAction(UIAlertAction(title: "Upload", style: .default) { _ in
+            alert.addAction(UIAlertAction(title: "上传", style: .default) { _ in
                 continuation.resume(returning: .folderUpload(allowed: true))
             })
             presenter.present(alert, animated: true)
@@ -292,15 +292,15 @@ final class PromptPresenter: PromptPresenting {
         
         switch label {
         case "ok":
-            return "OK"
+            return "好的"
         case "cancel":
-            return "Cancel"
+            return "取消"
         case "yes":
-            return "Yes"
+            return "是"
         case "no":
-            return "No"
+            return "否"
         case "custom":
-            return customLabel.isEmpty ? "OK" : customLabel
+            return customLabel.isEmpty ? "好的" : customLabel
         default:
             return ""
         }
