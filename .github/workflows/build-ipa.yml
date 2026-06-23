@@ -21,6 +21,16 @@ jobs:
       run: |
         git submodule init
         git submodule update --init --recursive --depth 1
+        # 确保 engine/firefox 子模块被正确注册
+        git submodule status engine/firefox || true
+        # 如果子模块状态异常，重新添加
+        if ! git submodule status -- engine/firefox >/dev/null 2>&1; then
+          echo "Submodule not properly registered, re-adding..."
+          git submodule add --force https://github.com/mozilla-firefox/firefox engine/firefox || true
+          git submodule init engine/firefox
+        fi
+        echo "Submodule status:"
+        git submodule status
     
     - name: Set up Python
       uses: actions/setup-python@v5

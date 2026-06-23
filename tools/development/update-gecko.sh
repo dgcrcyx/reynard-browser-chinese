@@ -22,8 +22,15 @@ if [[ -z "$RELEASE_TAG" ]]; then
 fi
 
 if ! git submodule status -- "$SUBMODULE_PATH" >/dev/null 2>&1; then
-	echo "Missing submodule $SUBMODULE_PATH. Add it first, then run this script."
-	exit 1
+	echo "Submodule $SUBMODULE_PATH not found. Adding it now..."
+	git submodule add --force "$FIREFOX_URL" "$SUBMODULE_PATH" || {
+		echo "Failed to add submodule. Trying alternative approach..."
+		# 如果 add 失败，尝试手动注册
+		git config -f .gitmodules submodule."$SUBMODULE_PATH".path "$SUBMODULE_PATH"
+		git config -f .gitmodules submodule."$SUBMODULE_PATH".url "$FIREFOX_URL"
+		git submodule init "$SUBMODULE_PATH"
+	}
+	echo "Submodule $SUBMODULE_PATH added successfully."
 fi
 
 if ! git ls-remote --exit-code --tags "$FIREFOX_URL" "refs/tags/$RELEASE_TAG" >/dev/null 2>&1; then
