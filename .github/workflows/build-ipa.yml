@@ -72,10 +72,12 @@ jobs:
       - name: Install LLVM (lld) for Gecko Build
         run: |
           brew install llvm
+          brew install lld
           # 将 llvm 的可执行文件路径追加进 GitHub Actions 的全局环境变量中
           echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
+          echo "$(brew --prefix lld)/bin" >> $GITHUB_PATH
           # 建立全局软链接，防止 mach 脚本探查不到硬路径
-          sudo ln -sf $(brew --prefix llvm)/bin/lld /usr/local/bin/lld
+          sudo ln -sf $(brew --prefix lld)/bin/lld /usr/local/bin/lld
           echo "==== 验证 lld 链接器可用性 ===="
           lld --version
 
