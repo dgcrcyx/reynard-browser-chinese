@@ -19,22 +19,21 @@ jobs:
     
     - name: Initialize submodules
       run: |
-        # 先处理 idevice 子模块
-        git submodule init support/idevice || true
-        git submodule update --init --depth 1 -- support/idevice || true
+        # 所有子模块都不通过 git submodule 机制处理，由各自的脚本自己管理
+        # 这里只确保目录准备好
+        echo "Preparing directories..."
         
-        # engine/firefox 不通过 submodule 机制处理，由 update-gecko.sh 脚本自己管理
-        # 这里只确保目录存在且为空（如果已有内容且不是 git 仓库则清理）
-        if [ -d "engine/firefox" ] && [ ! -d "engine/firefox/.git" ]; then
-          echo "engine/firefox exists but is not a git repo, removing..."
-          rm -rf engine/firefox
-        fi
-        
-        echo "Preparing engine/firefox directory..."
-        mkdir -p engine/firefox
+        # 清理可能存在的非 git 仓库目录
+        for dir in "engine/firefox" "support/idevice"; do
+          if [ -d "$dir" ] && [ ! -d "$dir/.git" ]; then
+            echo "$dir exists but is not a git repo, removing..."
+            rm -rf "$dir"
+          fi
+        done
         
         echo "Directory status:"
-        ls -la engine/
+        ls -la engine/ 2>/dev/null || echo "engine/ not found"
+        ls -la support/ 2>/dev/null || echo "support/ not found"
     
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -85,6 +84,7 @@ jobs:
       with:
         name: Reynard-IPA
         path: |
+          dist/Reynard-Unsigned.ipa
           dist/Reynard.ipa
           dist/Reynard-TrollStore.tipa
           dist/Reynard-Jailbroken.ipa

@@ -30,13 +30,18 @@ plutil -replace CFBundleIdentifier -string "com.minh-ton.Reynard" "$APP_PATH/Inf
 plutil -replace CFBundleIdentifier -string "com.minh-ton.Reynard.Helper" "$APP_PATH/PlugIns/Reynard Helper.appex/Info.plist"
 plutil -replace CFBundleIdentifier -string "com.minh-ton.Reynard.OpenIn" "$APP_PATH/PlugIns/OpenIn.appex/Info.plist"
 
-rm -rf "$WORK_DIR" "$ROOT_DIR/dist/Reynard.ipa" "$ROOT_DIR/dist/Reynard-TrollStore.ipa"
+rm -rf "$WORK_DIR" "$ROOT_DIR/dist/Reynard.ipa" "$ROOT_DIR/dist/Reynard-Unsigned.ipa" "$ROOT_DIR/dist/Reynard-TrollStore.ipa"
 mkdir -p "$WORK_DIR/Payload"
 cp -R "$APP_PATH" "$WORK_DIR/Payload/"
 
 cd "$WORK_DIR"
-zip -r ../Reynard.ipa Payload -x "._*" -x ".DS_Store" -x "__MACOSX" # normal ipa
 
+# 先打包未签名版本（不包含 ptrace_jit，完全未签名）
+echo "Creating unsigned IPA..."
+zip -r ../Reynard-Unsigned.ipa Payload -x "._*" -x ".DS_Store" -x "__MACOSX"
+echo "Unsigned IPA: Reynard-Unsigned.ipa"
+
+# 编译 ptrace_jit（用于 TrollStore/越狱版本）
 PTRACE_JIT_SRC="$ROOT_DIR/browser/Reynard/JIT/Unsandboxed/ptrace_jit.c"
 PTRACE_JIT_OUT="Payload/Reynard.app/ptrace_jit"
 
@@ -52,5 +57,10 @@ chmod 0755 "$PTRACE_JIT_OUT"
 ldid -S"$ROOT_DIR/browser/Reynard/JIT/Unsandboxed/ptrace_jit.entitlements" "$PTRACE_JIT_OUT"
 ldid -S"$ROOT_DIR/browser/Reynard/Entitlements/Reynard.private.entitlements" "Payload/Reynard.app/Reynard"
 ldid -S"$ROOT_DIR/browser/Helper/Entitlements/Reynard-Helper.private.entitlements" "Payload/Reynard.app/PlugIns/Reynard Helper.appex/Reynard Helper"
-zip -r ../Reynard-TrollStore.tipa Payload -x "._*" -x ".DS_Store" -x "__MACOSX" # trollstore ipa
-cp ../Reynard-TrollStore.tipa ../Reynard-Jailbroken.ipa # for jailbroken users
+
+# 打包普通 IPA（带 ldid 伪签名）
+zip -r ../Reynard.ipa Payload -x "._*" -x ".DS_Store" -x "__MACOSX" # normal ipa
+
+# TrollStore 和越狱版本（相同内容，不同后缀）
+cp ../Reynard.ipa ../Reynard-TrollStore.tipa # trollstore ipa
+cp ../Reynard.ipa ../Reynard-Jailbroken.ipa # for jailbroken users
