@@ -64,6 +64,12 @@ jobs:
         with:
           targets: aarch64-apple-ios
 
+      - name: Install cbindgen
+        run: |
+          cargo install cbindgen
+          echo "==== 验证 cbindgen 可用性 ===="
+          cbindgen --version
+
       - name: Install ldid
         run: |
           brew install ldid
