@@ -58,9 +58,9 @@ final class BookmarkStore {
         static let bookmarkTableName = "bookmarks"
         static let structureTableName = "bookmark_structure"
         static let rootFolderGUID = "root________"
-        static let rootFolderTitle = "Bookmarks"
+        static let rootFolderTitle = "书签"
         static let favoritesFolderGUID = "favorites___"
-        static let favoritesFolderTitle = "Favorites"
+        static let favoritesFolderTitle = "收藏"
     }
     
     private static let defaultFavoriteBookmarks: [(title: String, urlString: String)] = [

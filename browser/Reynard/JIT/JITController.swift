@@ -283,11 +283,11 @@ final class JITController {
         
         let viewController = JITFailureViewController(
             errorCode: Int(ENOENT),
-            errorDescription: "Required DDI files are missing.",
+            errorDescription: "缺少必需的 DDI 文件。",
             showsErrorDetails: false,
-            titleText: "Failed to enable JIT",
-            messageText: "The required Developer Disk Image files for enabling JIT were not found.\n\nJIT has been disabled. Quit the app using the button below, then re-enable JIT from the browser settings.",
-            actionButtonTitle: "Quit Reynard",
+            titleText: "启用 JIT 失败",
+            messageText: "未找到启用 JIT 所需的开发者磁盘镜像文件。\n\nJIT 已被禁用。请使用下方的按钮退出应用，然后从浏览器设置中重新启用 JIT。",
+            actionButtonTitle: "退出 Reynard",
             onPrimaryAction: {
                 self.disableJITAndQuit()
             }
