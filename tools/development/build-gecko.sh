@@ -12,7 +12,7 @@ cd "$ROOT_DIR"
 
 if [ ! -d "$FIREFOX_DIR" ]; then
 	echo "Missing firefox source at $FIREFOX_DIR"
-	echo "Add the submodule, then run tools/development/update-gecko.sh."
+	echo "Run tools/development/update-gecko.sh first."
 	exit 1
 fi
 

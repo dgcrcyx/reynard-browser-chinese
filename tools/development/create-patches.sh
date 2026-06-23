@@ -21,8 +21,14 @@ if [[ -z "$RELEASE_TAG" ]]; then
     exit 1
 fi
 
-if ! git submodule status -- "$SUBMODULE_PATH" >/dev/null 2>&1; then
-    echo "Missing submodule $SUBMODULE_PATH. Add it first, then run tools/development/update-gecko.sh."
+# 检查目录是否是有效的 git 仓库（不依赖 submodule 机制）
+if [[ ! -d "$SUBMODULE_PATH/.git" ]]; then
+    echo "Missing $SUBMODULE_PATH git repository. Run tools/development/update-gecko.sh first."
+    exit 1
+fi
+
+if ! git -C "$SUBMODULE_PATH" rev-parse -q --verify HEAD >/dev/null 2>&1; then
+    echo "$SUBMODULE_PATH is not a valid git repository. Run tools/development/update-gecko.sh first."
     exit 1
 fi
 
