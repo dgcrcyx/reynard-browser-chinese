@@ -1,0 +1,71 @@
+name: Build IPA
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: aarch64-apple-ios
+    
+    - name: Install ldid
+      run: |
+        brew install ldid
+    
+    - name: Download Gecko
+      run: |
+        chmod +x ./tools/development/update-gecko.sh
+        ./tools/development/update-gecko.sh
+    
+    - name: Apply patches
+      run: |
+        chmod +x ./tools/development/apply-patches.sh
+        ./tools/development/apply-patches.sh
+    
+    - name: Build idevice dependencies
+      run: |
+        chmod +x ./tools/development/build-idevice.sh
+        ./tools/development/build-idevice.sh
+    
+    - name: Build Gecko engine
+      run: |
+        chmod +x ./tools/development/build-gecko.sh
+        ./tools/development/build-gecko.sh
+    
+    - name: Build app
+      run: |
+        chmod +x ./tools/release/build-app.sh
+        ./tools/release/build-app.sh
+    
+    - name: Create IPA
+      run: |
+        chmod +x ./tools/release/create-ipa.sh
+        ./tools/release/create-ipa.sh
+    
+    - name: Upload IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: Reynard-IPA
+        path: |
+          dist/Reynard.ipa
+          dist/Reynard-TrollStore.tipa
+          dist/Reynard-Jailbroken.ipa
+        retention-days: 30
