@@ -114,14 +114,14 @@ final class SelectPicker {
             return
         }
         
-        let alert = UIAlertController(title: "Select Option", message: nil, preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: "选择选项", message: nil, preferredStyle: .actionSheet)
         for item in selectableChoices(from: choices) {
-            let title = item.label.isEmpty ? "Option" : item.label
+            let title = item.label.isEmpty ? "选项" : item.label
             alert.addAction(UIAlertAction(title: title, style: .default) { [weak self] _ in
                 self?.finish([item.id])
             })
         }
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel) { [weak self] _ in
             self?.finish(nil)
         })
         

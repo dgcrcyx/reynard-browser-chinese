@@ -19,16 +19,23 @@ jobs:
     
     - name: Initialize submodules
       run: |
+        # 先确保 .gitmodules 中的子模块配置被注册
         git submodule init
-        git submodule update --init --recursive --depth 1
-        # 确保 engine/firefox 子模块被正确注册
-        git submodule status engine/firefox || true
-        # 如果子模块状态异常，重新添加
+        
+        # 检查 engine/firefox 是否已注册
         if ! git submodule status -- engine/firefox >/dev/null 2>&1; then
-          echo "Submodule not properly registered, re-adding..."
-          git submodule add --force https://github.com/mozilla-firefox/firefox engine/firefox || true
+          echo "Submodule not registered, manually registering..."
+          # 手动注册子模块到 git 配置（不克隆）
+          git config submodule.engine/firefox.url https://github.com/mozilla-firefox/firefox
+          git config -f .gitmodules submodule.engine/firefox.path engine/firefox
+          git config -f .gitmodules submodule.engine/firefox.url https://github.com/mozilla-firefox/firefox
           git submodule init engine/firefox
         fi
+        
+        echo "Submodule registered. Now doing shallow update..."
+        # 浅克隆子模块
+        git submodule update --init --depth 1 -- engine/firefox || true
+        
         echo "Submodule status:"
         git submodule status
     
